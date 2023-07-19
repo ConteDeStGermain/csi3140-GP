@@ -1,4 +1,4 @@
-# Run using: python <path-to-topic.py> <number_of_topics>
+# Run using: python <path-to-topic.py> <path-to-json> <number_of_topics>
 # E.g. python topic.py ./sample.json 3
 
 # Example of output:
