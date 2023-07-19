@@ -2,7 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors'); 
-const { spawn } = require('child_process');
+const { spawnSync } = require('child_process');
 
 const app = express();
 
@@ -10,47 +10,96 @@ app.use(cors());
 
 app.use(express.json());
 
-function getRandomFloat1() {
-  return Math.random() * 2 - 1;
-}
-
-function getRandomFloat2() {
-  return Math.random();
+// Function to run sentiment.py script
+function getSentiment(input) {
+  const python = spawnSync('python', ['../python_scripts/sentiment.py', input]);
+  const output = python.stdout.toString();
+  const error = python.stderr.toString();
+  if (error) {
+    console.error('Python script error:', error);
+    return null;
+  }
+  console.log("Python output is: " + output)
+  return output;
 }
 
 // Set up an endpoint to save a message
 app.post('/saveMessage', (req, res) => {
-  const { id, message } = req.body;
+    const { id, message } = req.body;
 
-  const sentiment = spawn('python', ['../python_scripts/sentiment.py', message]);
+    // The path to your JSON file
+    const filePath = path.join(__dirname, "./messages.json");
 
-  // Generate two random floats
-  const float1 = getRandomFloat1();
-  const float2 = getRandomFloat2();
+    // Check if the file exists. If not, create it.
+    if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify({}));
+    }
 
-  // The path to your JSON file
-  const filePath = path.join(__dirname, "./messages.json");
+    // Get the current messages
+    let messages = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
-  // Check if the file exists. If not, create it.
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, JSON.stringify({}));
+    // Run sentiment.py script on the message
+    let attitude = getSentiment(message);
+    attitude = attitude.trim();
+
+    // If this ID already exists, add the new message to its array. Otherwise, create a new array for this ID.
+    if (messages[id]) {
+        messages[id].push({message, attitude});
+    } else {
+        messages[id] = [{message, attitude}];
+    }
+
+    // Write the new messages object back to the file
+    fs.writeFileSync(filePath, JSON.stringify(messages));
+
+    res.status(200).json({ status: 'success', attitude: attitude });
+});
+
+app.get('/getTopics', (req, res) => {
+  const numberOfTopics = req.query.number;
+
+  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
+
+  // Check for errors in the Python script
+  if(python.stderr.toString()){
+    console.log("Python script error: ", python.stderr.toString());
+    res.status(500).send({error: "An error occurred while executing the Python script"});
+    return;
   }
 
-  // Get the current messages
-  let messages = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  const data = JSON.parse(fs.readFileSync('./output.json', 'utf8'));
 
-  // If this ID already exists, add the new message to its array. Otherwise, create a new array for this ID.
-  if (messages[id]) {
-    messages[id].push({message, float1, float2});
-  } else {
-    messages[id] = [{message, float1, float2}];
+  let topicsMap = {};
+
+  for (let item of data) {
+    let topic = item[3];
+    if (topicsMap[topic]) {
+      topicsMap[topic]++;
+    } else {
+      topicsMap[topic] = 1;
+    }
   }
 
-  // Write the new messages object back to the file
-  fs.writeFileSync(filePath, JSON.stringify(messages));
+  let topicsArray = Object.entries(topicsMap);
+  res.status(200).json({ topics: topicsArray });
+});
 
-  // Send a success response
-  res.status(200).json({ status: 'success' });
+app.get('/getMessages', (req, res) => {
+  fs.readFile('./messages.json', 'utf8', (err, data) => {
+      if (err) {
+          console.log('Error reading file:', err);
+          res.status(500).json({ error: 'An error occurred while reading the file.' });
+          return;
+      }
+
+      try {
+          const messages = JSON.parse(data);
+          res.status(200).json(messages);
+      } catch (err) {
+          console.log('Error parsing JSON:', err);
+          res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
+      }
+  });
 });
 
 // Set up the server to listen on a port

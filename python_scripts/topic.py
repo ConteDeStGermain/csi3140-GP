@@ -8,7 +8,6 @@
 from gensim.models import LdaMulticore
 from gensim.corpora.dictionary import Dictionary
 import pandas as pd
-import gensim.models as gm
 import spacy
 import warnings
 import sys
@@ -17,7 +16,7 @@ warnings.filterwarnings("ignore")
 
 def format_topics_sentences(ldamodel, corpus, texts):
     # Init output
-    sent_topics_df = pd.DataFrame()
+    topic_info_list = []
 
     # Get main topic in each document
     for i, row in enumerate(ldamodel[corpus]):
@@ -27,32 +26,30 @@ def format_topics_sentences(ldamodel, corpus, texts):
             if j == 0:  # => dominant topic
                 wp = ldamodel.show_topic(topic_num)
                 topic_keywords = wp[0][0]
-                sent_topics_df = sent_topics_df.append(pd.Series([int(topic_num), round(prop_topic,4), topic_keywords]), ignore_index=True)
-            else:
+                topic_info_list.append([int(topic_num), round(prop_topic, 4), topic_keywords])
                 break
 
+    sent_topics_df = pd.DataFrame(topic_info_list)
     return(sent_topics_df)
 
 
 if __name__ == "__main__":
 
     nlp = spacy.load('en_core_web_sm')
-    
+
     path_to_data = sys.argv[1]
-    f = open(path_to_data)
-    data_array = json.load(f)
+    with open(path_to_data) as f:
+        json_data = json.load(f)
 
-    number_of_topics = sys.argv[2]
+    data_array = []
+    for key in json_data:
+        data_array += [entry["message"] for entry in json_data[key]]
 
-    index_values = range(0, len(data_array))
-    
-    # creating a list of column names
-    column_values = ['text']
-    
+    number_of_topics = int(sys.argv[2])
+
     # creating the dataframe
     data = pd.DataFrame(data = data_array, 
-                    index = index_values, 
-                    columns = column_values)
+                    columns = ['text'])
 
     clean_text = []
 
@@ -75,7 +72,5 @@ if __name__ == "__main__":
     # Format
     df_dominant_topic = df_topic_sents_keywords.reset_index()
 
-    f = open("output.json", "w")
-    f.write(json.dumps(df_dominant_topic.values.tolist()))
-    f.close()
-
+    with open("output.json", "w") as f:
+        f.write(json.dumps(df_dominant_topic.values.tolist()))

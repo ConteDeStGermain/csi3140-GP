@@ -6,6 +6,7 @@ export default function UserInput() {
   const [isMsgVisible, setIsMsgVisible] = useState(false)
   const [message, setMessage] = useState("")
   const [id, setId] = useState<Number>();
+  const [attitude, setAttitude] = useState("");
 
   useEffect(() => {
     setId(Math.floor(Math.random() * 9999) + 1);
@@ -13,6 +14,7 @@ export default function UserInput() {
 
   const sendMessage = async () => {
     try {
+      setIsMsgVisible(false);
       const response = await fetch('http://localhost:8080/saveMessage', {
         method: 'POST',
         headers: {
@@ -20,15 +22,30 @@ export default function UserInput() {
         },
         body: JSON.stringify({ id, message }),
       });
-
+  
       if (response.ok) {
+        const data = await response.json();
+        
+        switch (Number(data.attitude)) {
+          case -1: 
+            setAttitude("Negative");
+            break;
+          case 0: 
+            setAttitude("Neutral");
+            break;
+          case 1: 
+            setAttitude("Positive");
+            break;
+        }
+
         setIsMsgVisible(true);
       }
-
+  
     } catch (error) {
       console.error('An error occurred:', error);
     }
   };
+  
 
 
   return (
@@ -56,7 +73,7 @@ export default function UserInput() {
         <div className="flex flex-col mt-40">
           <textarea onChange={e => setMessage(e.target.value)} className="mb-4 p-2 bg-[#858585] w-[500px] h-[250px] border-2 border-black" />
           <div className="flex justify-end">
-            {isMsgVisible && <p id="msgSent">Message has been sent</p>}
+            {isMsgVisible && <p id="msgSent">{"Your message is " + attitude}</p>}
             <button onClick={sendMessage} className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white py-2 px-4 rounded ml-4">
               Send
             </button>

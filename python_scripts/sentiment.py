@@ -20,8 +20,10 @@ warnings.filterwarnings("ignore")
 nlp = spacy.load('en_core_web_sm')
 
 # loading models
-w2v_model = models.Word2Vec.load("./dependencies/w2v_model.model")
-lg_model = pickle.load(open("./dependencies/lg_model.sav", 'rb'))
+# w2v_model = models.Word2Vec.load("./dependencies/w2v_model.model")
+w2v_model = models.Word2Vec.load("../python_scripts/dependencies/w2v_model.model")
+# lg_model = pickle.load(open("./dependencies/lg_model.sav", 'rb'))
+lg_model = pickle.load(open("../python_scripts/dependencies/lg_model.sav", 'rb'))
 
 data_array = sys.argv[1]
 
