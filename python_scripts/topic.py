@@ -25,12 +25,11 @@ def format_topics_sentences(ldamodel, corpus, texts):
         for j, (topic_num, prop_topic) in enumerate(row):
             if j == 0:  # => dominant topic
                 wp = ldamodel.show_topic(topic_num)
-                topic_keywords = wp[0][0]
-                topic_info_list.append([int(topic_num), round(prop_topic, 4), topic_keywords])
+                topic_keyword = wp[0][0]  # use only the most representative keyword for each topic
+                topic_info_list.append([int(topic_num), round(prop_topic, 4), topic_keyword])
                 break
 
-    sent_topics_df = pd.DataFrame(topic_info_list)
-    return(sent_topics_df)
+    return topic_info_list
 
 
 if __name__ == "__main__":
@@ -43,13 +42,13 @@ if __name__ == "__main__":
 
     data_array = []
     for key in json_data:
-        data_array += [entry["message"] for entry in json_data[key]]
+        data_array += [(entry["message"], entry) for entry in json_data[key]]
 
     number_of_topics = int(sys.argv[2])
 
     # creating the dataframe
     data = pd.DataFrame(data = data_array, 
-                    columns = ['text'])
+                        columns = ['text', 'original_entry'])
 
     clean_text = []
 
@@ -67,10 +66,10 @@ if __name__ == "__main__":
     corpus = [dictionary.doc2bow(doc) for doc in data['clean_text']]
     lda_model = LdaMulticore(corpus, id2word=dictionary, num_topics=number_of_topics, workers=5, passes=10)
 
-    df_topic_sents_keywords = format_topics_sentences(ldamodel=lda_model, corpus=corpus, texts=data)
+    topics = format_topics_sentences(ldamodel=lda_model, corpus=corpus, texts=data)
 
-    # Format
-    df_dominant_topic = df_topic_sents_keywords.reset_index()
+    for i in range(len(data)):
+        data['original_entry'][i]['topic'] = topics[i][2] # Adding only the dominant keyword
 
-    with open("output.json", "w") as f:
-        f.write(json.dumps(df_dominant_topic.values.tolist()))
+    with open(path_to_data, "w") as f:
+        f.write(json.dumps(json_data))

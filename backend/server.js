@@ -68,7 +68,6 @@ app.get('/getTopics', (req, res) => {
   }
 
   const data = JSON.parse(fs.readFileSync('./output.json', 'utf8'));
-
   let topicsMap = {};
 
   for (let item of data) {
@@ -79,12 +78,13 @@ app.get('/getTopics', (req, res) => {
       topicsMap[topic] = 1;
     }
   }
-
   let topicsArray = Object.entries(topicsMap);
   res.status(200).json({ topics: topicsArray });
 });
 
 app.get('/getMessages', (req, res) => {
+  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', 4]);
+
   fs.readFile('./messages.json', 'utf8', (err, data) => {
       if (err) {
           console.log('Error reading file:', err);
