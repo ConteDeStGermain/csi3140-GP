@@ -1,5 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import logo from '../../../crsa.png';
 
 export default function Homepage() {
   const progressionData = [
@@ -13,17 +15,22 @@ export default function Homepage() {
     <main className="min-h-screen bg-[#858585]">
       <div className="flex justify-between p-5 bg-[#575757]">
         <div className="text-lg text-white">
-          Logo
+          <Image width={100} src={logo} alt='Logo'/>
         </div>
-        <div className="space-x-4">
+        <div className="mt-3 space-x-4">
         <Link href="/">
-          <button className=" text-white  py-2 px-4 ">
+          <button className="text-white  py-2 px-4 ">
             Home
           </button>
           </Link>
           <Link href="/userInput">
             <button className=" text-white  py-2 px-4 ">
               Test it
+            </button>
+          </Link>
+          <Link href="/dashboard">
+            <button className=" text-white  py-2 px-4 ">
+              Dashboard
             </button>
           </Link>
         </div>

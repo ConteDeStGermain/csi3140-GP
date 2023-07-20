@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react';
 import BubbleChart from '../components/bubbleChart';
+import Link from 'next/link';
 
 interface Row {
   id: number;
@@ -11,7 +12,6 @@ interface Row {
 
 
 export default function Dashboard() {
-  const [checkbox, setCheckbox] = useState(false);
   const [rows, setRows] = useState<Row[]>([]);
   const [topicsData, setTopicsData] = useState<any>();
   const [selectedTopic, setSelectedTopic] = useState('none');
@@ -87,11 +87,8 @@ export default function Dashboard() {
     } else {
       setFilteredRows(rows.filter(row => row.topic === selectedTopic));
     }
-  }, [selectedTopic]);
-
-  const handleCheckboxChange = () => {
-    setCheckbox(!checkbox);
-  };
+  }, [selectedTopic, rows]);
+  
 
   const handleTopicChange = (e: any) => {
     setSelectedTopic(e.target.value);
@@ -100,6 +97,11 @@ export default function Dashboard() {
   const handleDeleteRow = (id: number) => {
     setRows(rows.filter(row => row.id !== id));
   };
+
+  const handleAZsort = () => {
+    const sortedRows = [...filteredRows].sort((a, b) => a.text.localeCompare(b.text));
+    setFilteredRows(sortedRows);
+  }
 
   const downloadData = async () => {
     try {
@@ -118,13 +120,15 @@ export default function Dashboard() {
       console.error('An error occurred:', error);
     }
   }
-  console.log(topicsData)
+
   return (
     <main className="min-h-screen bg-[#858585]">
       <div className="flex justify-between p-5 bg-[#575757]">
-        <div className="text-lg text-white">
+      <Link href="/">
+      <div className="text-lg text-white">
           CRSA Dashboard
         </div>
+          </Link>
       </div>
      <div className="flex flex-col items-center justify-center p-4">
       <BubbleChart data={topicsData} width={700} height={300} />
@@ -138,8 +142,9 @@ export default function Dashboard() {
           )) }
         </select>
 
-        <label htmlFor="checkbox" className="mr-2">A-Z:</label>
-        <input type="checkbox" id="checkbox" checked={checkbox} onChange={handleCheckboxChange} className="mr-4" />
+        
+        <button onClick={handleAZsort}  className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white py-2 px-4 rounded ">Sort: A-Z</button>
+        
         </div>
         <table className="w-1/2 mt-4 border-black border-2">
           <tbody>

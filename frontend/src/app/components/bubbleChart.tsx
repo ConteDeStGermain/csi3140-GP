@@ -68,7 +68,7 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
   
   // Generate random colors for the bubbles
   const colors = normalizedData.map(() => `hsl(${Math.random() * 360}, 100%, 75%)`);
-  const bubblePositions = React.useMemo(() => generateBubblePositions(normalizedData), [normalizedData]);
+  const bubblePositions = generateBubblePositions(normalizedData)
 
   return (
     <div className={`w-[${width}px] h-[${height}px] border-2 border-black p-4`}>
