@@ -2,10 +2,10 @@
 import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import Image from 'next/image';
-import logo from '../../../crsa.png';
+import logo from '../../../images/crsa.png';
 
 export default function UserInput() {
-  const [notificationMsg, setNotificationMsg] = useState('')
+  const [notificationMsg, setNotificationMsg] = useState(<></>)
   const [message, setMessage] = useState("")
   const [id, setId] = useState<Number>();
   const inputFile = useRef(null);
@@ -16,8 +16,21 @@ export default function UserInput() {
   }, []);
 
   const sendMessage = async () => {
+    if (message.trim() == ""){
+      setNotificationMsg(
+        <>
+          No messages detected.
+        </>
+      );
+      return;
+    }
+
     try {
-      setNotificationMsg("Your messages is sent. Analyzing...");
+      setNotificationMsg(
+        <>
+          Received message. Analyzing...
+        </>
+      );
       const response = await fetch('http://localhost:8080/saveMessage', {
         method: 'POST',
         headers: {
@@ -27,22 +40,29 @@ export default function UserInput() {
       });
       let attitude = "";
       let attitudeScore = 0;
+      let markColour = "bg-yellow-200";
       if (response.ok) {
         const data = await response.json();
         switch (Number(data.attitude)) {
           case -1:
             attitude = "Negative";
+            markColour = "bg-red-100";
             break;
           case 0:
             attitude = "Neutral";
+            markColour = "bg-yellow-200";
             break;
           case 1:
             attitude = "Positive";
+            markColour = "bg-green-100";
             break;
         }
         attitudeScore = Number(data.attitudeScore);
 
-        setNotificationMsg("Your message is " + attitude + " with " + attitudeScore*100 + "% certainty");
+        setNotificationMsg(
+          <>
+            Your message is <b className={markColour}>{attitude}</b> with {(attitudeScore*100).toFixed(2)}% certainty!
+          </>);
       }
 
     } catch (error) {
@@ -80,7 +100,13 @@ export default function UserInput() {
         for (let i = 0; i < temp.length; i++) {
           try {
             let message = temp[i];
-            setNotificationMsg("Now analyzing sentence: " + message);
+            setNotificationMsg(
+            <>
+              Analyzing file contents... {Math.round(i/temp.length * 100)} % <br/>
+              <span className="text-sm">
+                Processing message: {message}
+              </span>
+            </>);
             await new Promise(r => setTimeout(r, 1000)); // Introduce delay
             const response = await fetch('http://localhost:8080/saveMessage', {
               method: 'POST',
@@ -94,7 +120,9 @@ export default function UserInput() {
             console.error('An error occurred:', error);
           }
         }
-        setNotificationMsg("All sentences analyzed, view on dashboard");
+        setNotificationMsg(
+          <>All sentences have been analyzed. Navigate to <a href="/dashboard" className="text-blue">dashboard</a> to view the results</>
+        );
       }
     }
 
@@ -104,7 +132,7 @@ export default function UserInput() {
 
 
   return (
-    <div className="min-h-screen bg-[#858585]">
+    <main className="min-h-screen">
       <div className="flex justify-between p-5 bg-[#575757]">
         <div className="text-lg text-white">
           <Image width={100} src={logo} alt='Logo' />
@@ -117,7 +145,7 @@ export default function UserInput() {
           </Link>
           <Link href="/userInput">
             <button className=" text-white  py-2 px-4 ">
-              Test it
+              Analyzer
             </button>
           </Link>
           <Link href="/dashboard">
@@ -128,22 +156,28 @@ export default function UserInput() {
         </div>
       </div>
       <h1 className='text-4xl border-b-black border-b-2 ml-4 p-4 w-[600px]'>Test it!</h1>
-      <div className="flex flex-row justify-center">
-        <h2 className="text-2xl mt-40 mr-24">Write a message: </h2>
-        <div className="flex flex-col mt-40">
-          <textarea onChange={e => setMessage(e.target.value)} className="mb-4 p-2 bg-[#858585] w-[500px] h-[250px] border-2 border-black" />
-          <div className="flex justify-end">
-            <p id="msgSent">{notificationMsg}</p>
-            <button onClick={sendMessage} className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white py-2 px-4 rounded ml-4">
-              Send
-            </button>
-            <input type="file" ref={inputFile} style={{ display: 'none' }} onChange={handleFileUpload} />
-            <button className=" text-white  py-2 px-4 " onClick={onButtonClick}>
+      <div className="ml-4 mt-20 text-center justify-center">
+        <div className="text-xl w-100">
+          <span className="text-start">
+            Write a message or upload a file to analyze multiple messages:
+          </span>
+        </div>
+        <div className="mt-5">
+          <textarea onChange={e => setMessage(e.target.value)} className="mb-4 p-2 w-[800px] h-[350px] border-2 border-black rounded" />
+        </div>
+        <div>
+          <button onClick={onButtonClick} className="text-blue hover:bg-grey-100 ms-2 me-4 ">
               Upload File
-            </button>
-          </div>
+          </button>
+          <input type="file" ref={inputFile} style={{ display: 'none' }} onChange={handleFileUpload} />
+          <button onClick={sendMessage} className="bg-black w-fit hover:bg-gray-800 text-white py-2 px-4 rounded ml-4 text-2xl">
+            Analyze
+          </button>
+        </div>
+        <div className="text-2xl mt-5" id="msgSent">
+          {notificationMsg}
         </div>
       </div>
-    </div>
+    </main>
   )
 }
