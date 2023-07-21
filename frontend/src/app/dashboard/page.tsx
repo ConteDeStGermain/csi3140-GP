@@ -7,6 +7,7 @@ interface Row {
   id: number;
   text: string;
   topic: string;
+  attitude: number;
 }
 
 
@@ -33,25 +34,29 @@ export default function Dashboard() {
           const formattedData = flattenedData.map((message: any, id: Number) => ({
             id: id,
             text: message.message,
-            topic: message.topic
+            topic: message.topic,
+            attitude: Number(message.attitude)
           }));
 
           // Initialize an object to store the count of each topic
           const topicCount: { [topic: string]: number } = {};
-
+          const topicAttitude: { [topic: string]: number } = {};
           // Iterate through the flattenedData to extract and count the topics
           flattenedData.forEach((message: any) => {
             if (message.topic in topicCount) {
               topicCount[message.topic]++;
+              topicAttitude[message.topic] += Number(message.attitude);
             } else {
               topicCount[message.topic] = 1;
+              topicAttitude[message.topic] = Number(message.attitude);
             }
           });
-          const topicsData = Object.entries(topicCount);
 
+          const topicsData = Object.entries(topicCount);
+          let combinedData = topicsData.map(([topic, count]) => [topic, count, topicAttitude[topic]]);
           // Set the states
           setRows(formattedData);
-          setTopicsData(topicsData);
+          setTopicsData(combinedData);
         }
       } catch (error) {
         console.error('An error occurred:', error);
@@ -102,6 +107,22 @@ export default function Dashboard() {
     }
   }
 
+  const showAttitudeAsText = (value: number) => {
+    let attitude = '';
+    switch (value) {
+      case -1:
+        attitude = "Negative";
+        break;
+      case 0:
+        attitude = "Neutral";
+        break;
+      case 1:
+        attitude = "Positive";
+        break;
+    }
+    return attitude;
+  }
+
   return (
     <main className="min-h-screen bg-[#858585]">
       <div className="flex justify-between p-5 bg-[#575757]">
@@ -113,7 +134,6 @@ export default function Dashboard() {
       </div>
       <div className="flex flex-col items-center justify-center p-4">
         <BubbleChart data={topicsData} width={700} height={300} />
-
         <div className="my-4 p-4 border-black border-2 rounded w-fit">
           <label htmlFor="topic" className="mr-2">Topic:</label>
           <select id="topic" value={selectedTopic} onChange={handleTopicChange} className="mr-4 p-1">
@@ -122,10 +142,7 @@ export default function Dashboard() {
               <option key={i} value={topic[0]}>{topic[0]}</option>
             ))}
           </select>
-
-
           <button onClick={handleAZsort} className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white py-2 px-4 rounded ">Sort: A-Z</button>
-
         </div>
         <table className="w-1/2 mt-4 border-black border-2">
           <tbody>
@@ -133,6 +150,7 @@ export default function Dashboard() {
               <tr key={row.id}>
                 <td className="border-black border-2 p-2">{row.text}</td>
                 <td className="border-black border-2 p-2">{row.topic}</td>
+                <td className="border-black border-2 p-2">{showAttitudeAsText(row.attitude)}</td>
                 <td className="border-black border-2 p-2 w-8 text-center">
                   <button onClick={() => handleDeleteRow(row.id)}>X</button>
                 </td>

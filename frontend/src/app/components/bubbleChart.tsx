@@ -29,7 +29,6 @@ function overlaps(a: Bubble & Position, b: Bubble & Position): boolean {
 
 const generateBubblePositions = (bubbles: Bubble[]): (Bubble & Position)[] => {
   const positions: (Bubble & Position)[] = [];
-
   for (const bubble of bubbles) {
     let attempts = 0;
     while (attempts < MAX_ATTEMPTS) {
@@ -48,9 +47,17 @@ const generateBubblePositions = (bubbles: Bubble[]): (Bubble & Position)[] => {
       attempts++;
     }
   }
-
   return positions;
 };
+
+// Generate a color between red and green based on value
+function getColor(value: number): string {
+  // Normalize the value from -3 to 3 to 0 to 1
+  const normalizedValue = (value + 3) / 6;
+  // Get the hue value ranging from red (0) to green (120)
+  const hue = (normalizedValue * 120).toString(10);
+  return ["hsl(", hue, ",100%,50%)"].join("");
+}
 
 
 const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
@@ -63,12 +70,16 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
       id: index,  // Access the id at index 0
       label: bubble[0],  // Access the value at index 1
       normalizedValue: (bubble[1] / maxDataValue) * Math.min(width / 2, height / 2) / 2,
+      attitude: bubble[2]
     }));
   }
 
   // Generate random colors for the bubbles
-  const colors = normalizedData.map(() => `hsl(${Math.random() * 360}, 100%, 75%)`);
+  // const colors = normalizedData.map(() => `hsl(${Math.random() * 360}, 100%, 75%)`);
+  const colors = normalizedData.map((bubble: any) => getColor(bubble.attitude));
   const bubblePositions = generateBubblePositions(normalizedData)
+
+  console.log(data)
 
   return (
     <div className={`w-[${width}px] h-[${height}px] border-2 border-black p-4`}>
