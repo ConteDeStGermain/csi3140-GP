@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Image from 'next/image';
 import logo from '../../../crsa.png';
 
@@ -8,7 +8,8 @@ export default function UserInput() {
   const [notificationMsg, setNotificationMsg] = useState('')
   const [message, setMessage] = useState("")
   const [id, setId] = useState<Number>();
-  const [attitude, setAttitude] = useState("");
+  const inputFile = useRef(null);
+  const [fileContent, setFileContent] = useState();
 
   useEffect(() => {
     setId(Math.floor(Math.random() * 9999) + 1);
@@ -46,7 +47,58 @@ export default function UserInput() {
       console.error('An error occurred:', error);
     }
   };
+
+  const handleFileUpload =  async (event: any) => {
+    const files = event.target.files;
+
+    if (files.length === 0) {
+      console.log('No file selected');
+      return;
+    }
+
+    const file = files[0];
+    const reader = new FileReader();
+
+    reader.onload = (event: any) => {
+      setFileContent(event.target.result);
+      
+    };
+
+    reader.readAsText(file);
+  };
   
+  const onButtonClick = () => {
+    inputFile.current.click();
+  };
+
+  useEffect(() => {
+    const sentencesAnalysis = async () => {
+        if (fileContent) {
+            let temp = fileContent.split('§')
+            for (let i = 0; i < temp.length; i++) {
+                try {
+                    let message = temp[i];
+                    setNotificationMsg("Now analyzing sentence: " + message);
+                    await new Promise(r => setTimeout(r, 1000)); // Introduce delay
+                    const response = await fetch('http://localhost:8080/saveMessage', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id, message }),
+                    });
+                    
+                } catch (error) {
+                    console.error('An error occurred:', error);
+                }
+            }
+            setNotificationMsg("All sentences analyzed, view on dashboard");
+        }
+    }
+    
+    sentencesAnalysis();
+}, [id, fileContent]);
+
 
 
   return (
@@ -82,6 +134,10 @@ export default function UserInput() {
             <p id="msgSent">{notificationMsg}</p>
             <button onClick={sendMessage} className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white py-2 px-4 rounded ml-4">
               Send
+            </button>
+            <input type="file" ref={inputFile} style={{ display: 'none' }} onChange={handleFileUpload} />
+            <button className=" text-white  py-2 px-4 " onClick={onButtonClick}>
+              Upload File
             </button>
           </div>
         </div>
