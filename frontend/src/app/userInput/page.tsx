@@ -29,26 +29,26 @@ export default function UserInput() {
       if (response.ok) {
         const data = await response.json();
         switch (Number(data.attitude)) {
-          case -1: 
+          case -1:
             attitude = "Negative";
             break;
-          case 0: 
+          case 0:
             attitude = "Neutral";
             break;
-          case 1: 
+          case 1:
             attitude = "Positive";
             break;
         }
 
         setNotificationMsg("Your message is " + attitude);
       }
-  
+
     } catch (error) {
       console.error('An error occurred:', error);
     }
   };
 
-  const handleFileUpload =  async (event: any) => {
+  const handleFileUpload = async (event: any) => {
     const files = event.target.files;
 
     if (files.length === 0) {
@@ -61,43 +61,43 @@ export default function UserInput() {
 
     reader.onload = (event: any) => {
       setFileContent(event.target.result);
-      
+
     };
 
     reader.readAsText(file);
   };
-  
+
   const onButtonClick = () => {
     inputFile.current.click();
   };
 
   useEffect(() => {
     const sentencesAnalysis = async () => {
-        if (fileContent) {
-            let temp = fileContent.split('§')
-            for (let i = 0; i < temp.length; i++) {
-                try {
-                    let message = temp[i];
-                    setNotificationMsg("Now analyzing sentence: " + message);
-                    await new Promise(r => setTimeout(r, 1000)); // Introduce delay
-                    const response = await fetch('http://localhost:8080/saveMessage', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ id, message }),
-                    });
-                    
-                } catch (error) {
-                    console.error('An error occurred:', error);
-                }
-            }
-            setNotificationMsg("All sentences analyzed, view on dashboard");
+      if (fileContent) {
+        let temp = fileContent.split('§')
+        for (let i = 0; i < temp.length; i++) {
+          try {
+            let message = temp[i];
+            setNotificationMsg("Now analyzing sentence: " + message);
+            await new Promise(r => setTimeout(r, 1000)); // Introduce delay
+            const response = await fetch('http://localhost:8080/saveMessage', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ id, message }),
+            });
+
+          } catch (error) {
+            console.error('An error occurred:', error);
+          }
         }
+        setNotificationMsg("All sentences analyzed, view on dashboard");
+      }
     }
-    
+
     sentencesAnalysis();
-}, [id, fileContent]);
+  }, [id, fileContent]);
 
 
 
@@ -105,7 +105,7 @@ export default function UserInput() {
     <div className="min-h-screen bg-[#858585]">
       <div className="flex justify-between p-5 bg-[#575757]">
         <div className="text-lg text-white">
-        <Image width={100} src={logo} alt='Logo'/>
+          <Image width={100} src={logo} alt='Logo' />
         </div>
         <div className="mt-3 space-x-4">
           <Link href="/">

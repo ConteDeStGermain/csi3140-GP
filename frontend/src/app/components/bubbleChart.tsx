@@ -18,7 +18,7 @@ interface Position {
 }
 
 const MAX_ATTEMPTS = 1000; // The maximum number of attempts to find a non-overlapping position for each bubble
-const WIDTH = 700; 
+const WIDTH = 700;
 const HEIGHT = 300;
 
 // Check if two bubbles overlap
@@ -39,7 +39,7 @@ const generateBubblePositions = (bubbles: Bubble[]): (Bubble & Position)[] => {
       };
 
       const overlapping = positions.some((pos) => overlaps(pos, { ...bubble, ...position }));
-      
+
       if (!overlapping) {
         positions.push({ ...bubble, ...position });
         break;
@@ -59,13 +59,13 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
   let normalizedData: any = [];
   if (data) {
     maxDataValue = Math.max(...data.map(bubble => bubble[1]));  // Access the value at index 1
-    normalizedData = data.map((bubble, index) => ({  
+    normalizedData = data.map((bubble, index) => ({
       id: index,  // Access the id at index 0
       label: bubble[0],  // Access the value at index 1
-      normalizedValue: (bubble[1] / maxDataValue) * Math.min(width/2, height/2) / 2,
+      normalizedValue: (bubble[1] / maxDataValue) * Math.min(width / 2, height / 2) / 2,
     }));
   }
-  
+
   // Generate random colors for the bubbles
   const colors = normalizedData.map(() => `hsl(${Math.random() * 360}, 100%, 75%)`);
   const bubblePositions = generateBubblePositions(normalizedData)
@@ -76,24 +76,24 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
         {bubblePositions.map((bubble: any, i: any) => {
           return (
             <svg key={i}>
-            <circle
-              key={bubble.id}
-              cx={bubble.x}
-              cy={bubble.y}
-              r={bubble.normalizedValue}
-              fill={colors[i]}
-            />
-            <text
-              x={bubble.x}
-              y={bubble.y}
-              textAnchor="middle"
-              fill="#fff" // you can adjust this color
-              fontSize="20" // adjust the font size
-              dy=".3em" // to center text vertically in the circle
-            >
-              {bubble.label}
-            </text>
-          </svg>
+              <circle
+                key={bubble.id}
+                cx={bubble.x}
+                cy={bubble.y}
+                r={bubble.normalizedValue}
+                fill={colors[i]}
+              />
+              <text
+                x={bubble.x}
+                y={bubble.y}
+                textAnchor="middle"
+                fill="#fff" // you can adjust this color
+                fontSize="20" // adjust the font size
+                dy=".3em" // to center text vertically in the circle
+              >
+                {bubble.label}
+              </text>
+            </svg>
           );
         })}
       </svg>

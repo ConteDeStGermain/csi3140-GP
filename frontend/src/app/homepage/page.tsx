@@ -15,13 +15,13 @@ export default function Homepage() {
     <main className="min-h-screen bg-[#858585]">
       <div className="flex justify-between p-5 bg-[#575757]">
         <div className="text-lg text-white">
-          <Image width={100} src={logo} alt='Logo'/>
+          <Image width={100} src={logo} alt='Logo' />
         </div>
         <div className="mt-3 space-x-4">
-        <Link href="/">
-          <button className="text-white  py-2 px-4 ">
-            Home
-          </button>
+          <Link href="/">
+            <button className="text-white  py-2 px-4 ">
+              Home
+            </button>
           </Link>
           <Link href="/userInput">
             <button className=" text-white  py-2 px-4 ">
@@ -40,9 +40,9 @@ export default function Homepage() {
           CRSA Tool
         </h1>
         <Link href="/userInput">
-        <button className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white  py-2 px-4 rounded">
-          Test it!
-        </button>
+          <button className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white  py-2 px-4 rounded">
+            Test it!
+          </button>
         </Link>
       </div>
       <div className='bg-[#bfbfbf] p-5 h-[100vh]'>
@@ -50,9 +50,12 @@ export default function Homepage() {
           <h1 className='text-4xl border-b-black border-b-2 pb-4 w-[600px] m-5'>What is CRSA?</h1>
           <div className='flex flex-col items-center space-y-4'>
             <p className='pr-5 pl-5'>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem.</p>
-            <button className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white py-2 px-4 rounded">
-              Link to GitHub
-            </button>
+            <a href="https://github.com/ConteDeStGermain/csi3140-GP" target="_blank" rel="noopener noreferrer">
+
+              <button className="bg-black w-fit hover:bg-gray-200 hover:text-black text-white py-2 px-4 rounded">
+                Link to GitHub
+              </button>
+            </a>
           </div>
         </div>
         <div>
