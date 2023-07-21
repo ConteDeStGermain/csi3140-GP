@@ -56,9 +56,8 @@ function getColor(value: number): string {
   const normalizedValue = (value + 3) / 6;
   // Get the hue value ranging from red (0) to green (120)
   const hue = (normalizedValue * 120).toString(10);
-  return ["hsl(", hue, ",100%,50%)"].join("");
+  return ["hsl(", hue, ",100%, 75%, 0.8)"].join("");
 }
-
 
 const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
   // Normalize the values to fit in the chart dimensions
@@ -79,10 +78,10 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
   const colors = normalizedData.map((bubble: any) => getColor(bubble.attitude));
   const bubblePositions = generateBubblePositions(normalizedData)
 
-  console.log(data)
+  console.log("Data:" + data)
 
   return (
-    <div className={`w-[${width}px] h-[${height}px] border-2 border-black p-4`}>
+    <div className={`w-[${width}px] h-[${height}px] border-1 border-black p-4 bg-white rounded`}>
       <svg width={width} height={height}>
         {bubblePositions.map((bubble: any, i: any) => {
           return (
@@ -98,7 +97,7 @@ const BubbleChart: React.FC<BubbleChartProps> = ({ data, width, height }) => {
                 x={bubble.x}
                 y={bubble.y}
                 textAnchor="middle"
-                fill="#fff" // you can adjust this color
+                fill="#808080" // you can adjust this color
                 fontSize="20" // adjust the font size
                 dy=".3em" // to center text vertically in the circle
               >

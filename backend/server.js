@@ -38,20 +38,21 @@ app.post('/saveMessage', (req, res) => {
     let messages = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
     // Run sentiment.py script on the message
-    let attitude = getSentiment(message);
-    attitude = attitude.trim();
+    let senti = getSentiment(message).trim().split(" ");
+    let attitude = senti[0];
+    let attitudeScore = senti[1];
 
     // If this ID already exists, add the new message to its array. Otherwise, create a new array for this ID.
     if (messages[id]) {
-        messages[id].push({message, attitude});
+        messages[id].push({message, attitude, attitudeScore});
     } else {
-        messages[id] = [{message, attitude}];
+        messages[id] = [{message, attitude, attitudeScore}];
     }
 
     // Write the new messages object back to the file
     fs.writeFileSync(filePath, JSON.stringify(messages));
 
-    res.status(200).json({ status: 'success', attitude: attitude });
+    res.status(200).json({ status: 'success', attitude: attitude, attitudeScore: attitudeScore });
 });
 
 app.get('/getTopics', (req, res) => {

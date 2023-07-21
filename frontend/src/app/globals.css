@@ -25,3 +25,13 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.hero {
+  background-image: url("../../images/paper-grayed.png") !important;
+  background-size: cover;
+  background-position: center;
+}
+
+.h1-shadow {
+  text-shadow: 2px 2px 4px #000000;
+}
