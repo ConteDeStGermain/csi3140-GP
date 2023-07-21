@@ -26,6 +26,7 @@ export default function UserInput() {
         body: JSON.stringify({ id, message }),
       });
       let attitude = "";
+      let attitudeScore = 0;
       if (response.ok) {
         const data = await response.json();
         switch (Number(data.attitude)) {
@@ -39,8 +40,9 @@ export default function UserInput() {
             attitude = "Positive";
             break;
         }
+        attitudeScore = Number(data.attitudeScore);
 
-        setNotificationMsg("Your message is " + attitude);
+        setNotificationMsg("Your message is " + attitude + " with " + attitudeScore*100 + "% certainty");
       }
 
     } catch (error) {
