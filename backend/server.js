@@ -19,7 +19,6 @@ function getSentiment(input) {
     console.error('Python script error:', error);
     return null;
   }
-  console.log("Python output is: " + output)
   return output;
 }
 

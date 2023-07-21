@@ -18,25 +18,6 @@ export default function Dashboard() {
   const [filteredRows, setFilteredRows] = useState(rows); 
 
   useEffect(() => {
-    const getTopics = async (number: number) => {
-      try {
-        const response = await fetch(`http://localhost:8080/getTopics?number=${number}`);
-        if (response.ok) {
-          const data = await response.json();
-          const formattedData = data.topics.map((topic: any, i: Number) => ({
-            id: i,
-            value: topic[1],
-            label: topic[0]
-          }));
-          setTopicsData(formattedData);
-          // You can then do whatever you need with the data here, such as setting it to state.
-        }
-    
-      } catch (error) {
-        console.error('An error occurred:', error);
-      }
-    };
-
     const getMessages = async () => {
       try {
         const response = await fetch(`http://localhost:8080/getMessages`);
