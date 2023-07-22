@@ -81,9 +81,105 @@ app.post('/saveMessage', function (req, res) {
     res.status(200).json({ status: 'success', attitude: attitude, attitudeScore: attitudeScore });
 });
 
+app.get('/getTopics', function (req, res) {
+  const numberOfTopics = req.query.number;
+
+  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
+
+  // Check for errors in the Python script
+  if(python.stderr.toString()){
+    console.log("Python script error: ", python.stderr.toString());
+    res.status(500).send({error: "An error occurred while executing the Python script"});
+    return;
+  }
+
+  const data = JSON.parse(fs.readFileSync('./output.json', 'utf8'));
+  let topicsMap = {};
+
+  for (let item of data) {
+    let topic = item[3];
+    if (topicsMap[topic]) {
+      topicsMap[topic]++;
+    } else {
+      topicsMap[topic] = 1;
+    }
+  }
+  let topicsArray = Object.entries(topicsMap);
+  res.status(200).json({ topics: topicsArray });
+});
+
+app.get('/getNumberOfMessages', function (req, res) {
+  fs.readFile('./messages.json', 'utf8', function (err, data) {
+    if (err) {
+      console.log('Error reading file:', err);
+      res.status(500).json({ error: 'An error occurred while reading the file.' });
+      return;
+    }
+
+    try {
+        const messages = JSON.parse(data);
+        var messagesCount = 0;
+
+        for (var user in messages){
+          messagesCount += messages[user].length;
+        }
+
+        res.status(200).json(messagesCount);
+    } catch (err) {
+        console.log('Error parsing JSON:', err);
+        res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
+    }
+  });
+})
+
+app.get('/getMessagesWithTopicModelling', function (req, res) {
+  const numberOfTopics = req.query.number;
+  
+  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
+  const error = python.stderr.toString();
+  if (error) {
+    res.status(500).json({ error: 'An error occurred while running the python script.' });
+    return;
+  }
+  
+  fs.readFile('./messages.json', 'utf8', function (err, data) {
+    if (err) {
+      console.log('Error reading file:', err);
+      res.status(500).json({ error: 'An error occurred while reading the file.' });
+      return;
+    }
+    try {
+        const messages = JSON.parse(data);
+        res.status(200).json(messages);
+    } catch (err) {
+        console.log('Error parsing JSON:', err);
+        res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
+    }
+  });
+});
+
 // Set up the server to listen on a port
 const port = 8080;
 app.listen(port);
+
+app.get('/getMessages', function (req, res) {
+
+  fs.readFile('./messages.json', 'utf8', function (err, data) {
+    if (err) {
+      console.log('Error reading file:', err);
+      res.status(500).json({ error: 'An error occurred while reading the file.' });
+      return;
+    }
+    try {
+        const messages = JSON.parse(data);
+        res.status(200).json(messages);
+    } catch (err) {
+        console.log('Error parsing JSON:', err);
+        res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
+    }
+  });
+});
+
 `);
 
 // const response = await fetch('http://localhost:8080/saveMessage', {
