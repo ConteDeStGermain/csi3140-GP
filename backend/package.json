@@ -10,7 +10,7 @@
     "supertest": "^6.3.3"
   },
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --testTimeout=10000",
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --detectOpenHandles",
     "pretest": "cross-env NODE_ENV=test"
   },
   "jest": {

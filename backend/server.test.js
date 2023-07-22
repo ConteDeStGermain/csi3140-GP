@@ -1,8 +1,13 @@
-const server = require('./server.js');
+const server = require('./server');
 const supertest = require('supertest');
-const requestWithSupertest = supertest(server);
+requestWithSupertest = supertest(server.listening);
 
 const id = 123;
+
+afterAll(done => {
+    server.listening.close();
+    done();
+})
 
 describe('POST requests', function () {
     it("POST /saveMessage with no message in request body, throws 500 error", async () => {

@@ -197,8 +197,9 @@ app.put("/removeUserMessages", (req, res) => {
   });
 });
 
-module.exports = app
-
 // Set up the server to listen on a port
 const port = 8080;
-app.listen(port, () => console.log(`Server listening on port ${port}`));
+const listening = app.listen(port, () => console.log(`Server listening on port ${port}`));
+
+exports.app = app;
+exports.listening = listening;
