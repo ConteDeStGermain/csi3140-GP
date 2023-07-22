@@ -8,8 +8,9 @@ export default function UserInput() {
   const [notificationMsg, setNotificationMsg] = useState(<></>)
   const [message, setMessage] = useState("")
   const [id, setId] = useState<Number>();
-  const inputFile = useRef(null);
-  const [fileContent, setFileContent] = useState();
+  const inputFile = useRef<HTMLInputElement>(null);
+  const content : String | null = null;
+  const [fileContent, setFileContent] = useState(content);
 
   useEffect(() => {
     setId(Math.floor(Math.random() * 9999) + 1);
@@ -89,14 +90,11 @@ export default function UserInput() {
     reader.readAsText(file);
   };
 
-  const onButtonClick = () => {
-    inputFile.current.click();
-  };
-
   useEffect(() => {
     const sentencesAnalysis = async () => {
-      if (fileContent) {
-        let temp = fileContent.split('§')
+      const content = (fileContent !== null)? fileContent : "";
+      if (content.length > 0) {
+        let temp = content.split('§')
         for (let i = 0; i < temp.length; i++) {
           try {
             let message = temp[i];
@@ -130,6 +128,10 @@ export default function UserInput() {
   }, [id, fileContent]);
 
 
+  const onButtonClick = () => {
+    if (inputFile.current)
+      inputFile.current.click();
+  };
 
   return (
     <main className="min-h-screen">

@@ -3,11 +3,11 @@ import React from 'react';
 interface Bubble {
   id: number;
   value: number;
-  normalizedValue?: number;
+  normalizedValue: number;
 }
 
 interface BubbleChartProps {
-  data: Bubble[];
+  data: Bubble[] | any[];
   width: number;
   height: number;
 }
@@ -22,12 +22,14 @@ const WIDTH = 700;
 const HEIGHT = 300;
 
 // Check if two bubbles overlap
-function overlaps(a: Bubble & Position, b: Bubble & Position): boolean {
+function overlaps(a: any, b:any): boolean {
   const distance = Math.hypot(b.x - a.x, b.y - a.y);
-  return distance < (a.normalizedValue + b.normalizedValue);
+  if (a.normalizedValue && b.normalizedValue)
+    return distance < (a.normalizedValue + b.normalizedValue);
+  return false;
 }
 
-const generateBubblePositions = (bubbles: Bubble[]): (Bubble & Position)[] => {
+const generateBubblePositions = (bubbles: Bubble[]): any[] => {
   const positions: (Bubble & Position)[] = [];
   for (const bubble of bubbles) {
     let attempts = 0;

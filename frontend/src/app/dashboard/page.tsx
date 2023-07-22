@@ -83,7 +83,7 @@ export default function Dashboard() {
             });
   
             const topicsData = Object.entries(topicCount);
-            let combinedData = topicsData.map(([topic, count]) => [topic, count, topicAttitude[topic], topicAttitudeScore[topic]]);
+            let combinedData = topicsData.map(([topic, count]) => [topic, count, topicAttitude[topic]]);
             // Set the states
             setRows(formattedData);
             setTopicsData(combinedData);
