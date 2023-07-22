@@ -27,9 +27,11 @@ jobs:
         run: python.exe -m pip install --upgrade pip
       - name: Separately installing pytorch
         run: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
-      - name: Install Python Dependencies through Conda
+      - name: Separately installing python-dev-tools
+        run: python3 -m pip install python-dev-tools --user --upgrade
+      - name: Install Python Dependencies
         working-directory: ./python_scripts/
-        run: conda install --file requirements.txt
+        run: pip install --file requirements.txt
       - name: Run Tests
         working-directory: ./backend/
         run: npm test
