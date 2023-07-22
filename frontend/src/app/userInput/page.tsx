@@ -163,18 +163,18 @@ export default function UserInput() {
           </span>
         </div>
         <div className="mt-5">
-          <textarea onChange={e => setMessage(e.target.value)} className="mb-4 p-2 w-[800px] h-[350px] border-2 border-black rounded" />
+          <textarea onChange={e => setMessage(e.target.value)} className="mb-4 p-2 w-[800px] h-[350px] border-2 border-black rounded" data-testid="user-input-textarea"/>
         </div>
         <div>
           <button onClick={onButtonClick} className="text-blue hover:bg-grey-100 ms-2 me-4 ">
               Upload File
           </button>
           <input type="file" ref={inputFile} style={{ display: 'none' }} onChange={handleFileUpload} />
-          <button onClick={sendMessage} className="bg-black w-fit hover:bg-gray-800 text-white py-2 px-4 rounded ml-4 text-2xl">
+          <button onClick={sendMessage} className="bg-black w-fit hover:bg-gray-800 text-white py-2 px-4 rounded ml-4 text-2xl" data-testid="user-input-analyze-btn">
             Analyze
           </button>
         </div>
-        <div className="text-2xl mt-5" id="msgSent">
+        <div className="text-2xl mt-5" data-testid="user-input-notification-msg">
           {notificationMsg}
         </div>
       </div>

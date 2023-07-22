@@ -82,23 +82,71 @@ app.get('/getTopics', (req, res) => {
   res.status(200).json({ topics: topicsArray });
 });
 
-app.get('/getMessages', (req, res) => {
-  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', 4]);
-
+app.get('/getNumberOfMessages', (req, res) => {
   fs.readFile('./messages.json', 'utf8', (err, data) => {
-      if (err) {
-          console.log('Error reading file:', err);
-          res.status(500).json({ error: 'An error occurred while reading the file.' });
-          return;
-      }
+    if (err) {
+      console.log('Error reading file:', err);
+      res.status(500).json({ error: 'An error occurred while reading the file.' });
+      return;
+    }
 
-      try {
-          const messages = JSON.parse(data);
-          res.status(200).json(messages);
-      } catch (err) {
-          console.log('Error parsing JSON:', err);
-          res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
-      }
+    try {
+        const messages = JSON.parse(data);
+        var messagesCount = 0;
+
+        for (var user in messages){
+          messagesCount += messages[user].length;
+        }
+
+        res.status(200).json(messagesCount);
+    } catch (err) {
+        console.log('Error parsing JSON:', err);
+        res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
+    }
+  });
+})
+
+app.get('/getMessagesWithTopicModelling', (req, res) => {
+  const numberOfTopics = req.query.number;
+  
+  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
+  const error = python.stderr.toString();
+  if (error) {
+    console.error('Python script error:', error);
+    return null;
+  }
+  
+  fs.readFile('./messages.json', 'utf8', (err, data) => {
+    if (err) {
+      console.log('Error reading file:', err);
+      res.status(500).json({ error: 'An error occurred while reading the file.' });
+      return;
+    }
+    try {
+        const messages = JSON.parse(data);
+        res.status(200).json(messages);
+    } catch (err) {
+        console.log('Error parsing JSON:', err);
+        res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
+    }
+  });
+});
+
+app.get('/getMessages', (req, res) => {
+  
+  fs.readFile('./messages.json', 'utf8', (err, data) => {
+    if (err) {
+      console.log('Error reading file:', err);
+      res.status(500).json({ error: 'An error occurred while reading the file.' });
+      return;
+    }
+    try {
+        const messages = JSON.parse(data);
+        res.status(200).json(messages);
+    } catch (err) {
+        console.log('Error parsing JSON:', err);
+        res.status(500).json({ error: 'An error occurred while parsing the JSON.' });
+    }
   });
 });
 
