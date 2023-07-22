@@ -1,0 +1,37 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        working-directory: ./backend/
+        run: npm install
+      - name: Updating pip
+        run: python.exe -m pip install --upgrade pip
+      - name: Separately installing pytorch
+        run: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
+      - name: Separately installing python-dev-tools
+        run: python3 -m pip install python-dev-tools --user --upgrade
+      - name: Install Python Dependencies
+        working-directory: ./python_scripts/
+        run: pip install -r requirements.txt
+      - name: Run Tests
+        working-directory: ./backend/
+        run: npm test
