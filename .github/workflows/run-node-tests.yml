@@ -29,6 +29,9 @@ jobs:
         run: pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu117
       - name: Separately installing python-dev-tools
         run: python3 -m pip install python-dev-tools --user --upgrade
+      - name: Separately generates wheen for hbscan
+        uses: ilammy/msvc-dev-cmd@v1
+        run: conda install -c conda-forge hdbscan
       - name: Install Python Dependencies
         working-directory: ./python_scripts/
         run: pip install -r requirements.txt
