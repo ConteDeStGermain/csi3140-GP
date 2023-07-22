@@ -26,6 +26,11 @@ function getSentiment(input) {
 app.post('/saveMessage', (req, res) => {
     const { id, message } = req.body;
 
+    if (message === null || id === null || message.length === 0 || id.length === 0){
+      res.status(500);
+      res.end();
+    }
+
     // The path to your JSON file
     const filePath = path.join(__dirname, "./messages.json");
 
@@ -112,8 +117,8 @@ app.get('/getMessagesWithTopicModelling', (req, res) => {
   const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
   const error = python.stderr.toString();
   if (error) {
-    console.error('Python script error:', error);
-    return null;
+    res.status(500).json({ error: 'An error occurred while running the python script.' });
+    return;
   }
   
   fs.readFile('./messages.json', 'utf8', (err, data) => {
@@ -133,7 +138,7 @@ app.get('/getMessagesWithTopicModelling', (req, res) => {
 });
 
 app.get('/getMessages', (req, res) => {
-  
+
   fs.readFile('./messages.json', 'utf8', (err, data) => {
     if (err) {
       console.log('Error reading file:', err);
@@ -149,6 +154,50 @@ app.get('/getMessages', (req, res) => {
     }
   });
 });
+
+app.put("/removeUserMessages", (req, res) => {
+  const userId = req.query.id;
+  
+  if (!userId || userId.length <= 0){
+    res.status(500);
+    res.end();
+  }
+
+  fs.readFile('./messages.json', 'utf8', (err, data) => {
+    if (err) {
+      console.log('Error reading file:', err);
+      res.status(500).json({ error: 'An error occurred while reading the file.' });
+      return;
+    }
+    try {
+      const messagesPerUser = JSON.parse(data);
+
+      var getUserEntry = messagesPerUser[userId];
+
+      if (!messagesPerUser.hasOwnProperty(userId.toString())) {
+        res.status(200).json({success: "false"});
+        return;
+      }
+
+      delete messagesPerUser[userId];
+
+      // The path to your JSON file
+      const filePath = path.join(__dirname, "./messages.json");
+      // Write the new messages object back to the file
+      fs.writeFileSync(filePath, JSON.stringify(messagesPerUser));
+
+      res.status(200).json({success: "true", entry: getUserEntry});
+      res.end();
+    } 
+    catch (err) {
+      console.log('Error parsing JSON:', err);
+      res.status(500);
+      return;
+    }
+  });
+});
+
+module.exports = app
 
 // Set up the server to listen on a port
 const port = 8080;

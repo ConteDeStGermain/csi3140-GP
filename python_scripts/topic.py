@@ -1,10 +1,6 @@
 # Run using: python <path-to-topic.py> <number_of_topics>
 # E.g. python topic.py ./sample.json 3
 
-# Example of output:
-# [[0, 0, 0.6650999784469604, "comment"], [1, 2, 0.776199996471405, "hate"], [2, 1, 0.8309000134468079, "lovely"], [3, 1, 0.774399995803833, "lovely"]]
-# [[document_#, topic_#, topic_percent_of_document, topic_name], [...], ...]
-
 from gensim.models import LdaMulticore
 from gensim.corpora.dictionary import Dictionary
 import pandas as pd
@@ -45,6 +41,9 @@ if __name__ == "__main__":
         data_array += [(entry["message"], entry) for entry in json_data[key]]
 
     number_of_topics = int(sys.argv[2])
+
+    if len(data_array) == 0:
+        sys.exit()
 
     # creating the dataframe
     data = pd.DataFrame(data = data_array, 

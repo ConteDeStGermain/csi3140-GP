@@ -18,6 +18,7 @@ config = AutoConfig.from_pretrained(MODEL)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
 text = sys.argv[1]
+
 encoded_input = tokenizer(text, return_tensors='pt')
 output = model(**encoded_input)
 scores = output[0][0].detach().numpy()
