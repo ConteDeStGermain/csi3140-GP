@@ -30,3 +30,39 @@ To install the necessary Python packages, you'll need Python and pip installed o
 3. Install the necessary Python packages with: `pip install -r requirements.txt`
 
 Now, you should have all the necessary Python packages installed.
+
+
+# Project Setup [Docker]
+
+Pull the server and client images from Docker Hub, by running the following commands:
+
+For the [server image](https://hub.docker.com/repository/docker/svetlana154/crsa-web-app-server/general): 
+```
+docker pull svetlana154/crsa-web-app-server:latest
+```
+
+For the [client image](https://hub.docker.com/repository/docker/svetlana154/crsa-web-app-client/general): 
+```
+docker pull svetlana154/crsa-web-app-client:latest
+```
+
+# Manual Testing
+
+In order to test the server endpoints, pull the github source code and navigate to the backend directory through `cd ./backend`. Then run the following command to run all the JavaScript tests for the backend:
+```
+npm test
+```
+Alternatively, you can run the command with coverage  to check the coverage of the tests over the code.
+```
+npm test -- --coverage
+```
+*Note: if the port 8080 is busy, one of the server tests will fail, so ensure that the port is free for the server to use to acheive the best results*
+
+
+For the python scripts, run the tests individually through the following commands. Make sure you navigate to the `/backend/scripts` directory first before running any of the commands, or modify the commands accordingly.
+```
+python sentiment.test.py
+```
+```
+python topic.test.py
+``` 
