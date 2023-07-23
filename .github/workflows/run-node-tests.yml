@@ -36,7 +36,7 @@ jobs:
           auto-activate-base: false
       - run: conda install -c conda-forge hdbscan
       - name: Install Python Dependencies
-        working-directory: ./python_scripts/
+        working-directory: ./scripts/
         run: pip install -r requirements.txt
       - name: Run Tests
         working-directory: ./backend/

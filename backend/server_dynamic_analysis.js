@@ -7,7 +7,7 @@
 //   });
 
 //   function getSentiment(input) {
-//     const python = spawnSync('python', ['../python_scripts/sentiment.py', input]);
+//     const python = spawnSync('python', ['./scripts/sentiment.py', input]);
 //     const output = python.stdout.toString();
 //     const error = python.stderr.toString();
 //     if (error) {
@@ -32,7 +32,7 @@ app.use(express.json());
 
 let stage = new Iroh.Stage(`
 function getSentiment(input) {
-    const python = spawnSync('python', ['../python_scripts/sentiment.py', input]);
+    const python = spawnSync('python', ['./scripts/sentiment.py', input]);
     const output = python.stdout.toString();
     const error = python.stderr.toString();
     if (error) {
@@ -84,7 +84,7 @@ app.post('/saveMessage', function (req, res) {
 app.get('/getTopics', function (req, res) {
   const numberOfTopics = req.query.number;
 
-  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
+  const python = spawnSync('python', ['../scripts/topic.py', './messages.json', numberOfTopics]);
 
   // Check for errors in the Python script
   if(python.stderr.toString()){
@@ -135,7 +135,7 @@ app.get('/getNumberOfMessages', function (req, res) {
 app.get('/getMessagesWithTopicModelling', function (req, res) {
   const numberOfTopics = req.query.number;
   
-  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
+  const python = spawnSync('python', ['./scripts/topic.py', './messages.json', numberOfTopics]);
   const error = python.stderr.toString();
   if (error) {
     res.status(500).json({ error: 'An error occurred while running the python script.' });

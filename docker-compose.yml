@@ -1,0 +1,14 @@
+version: '1.0.0'
+
+services:
+  client:
+    image: client:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      - server
+    stdin_open: true
+  server:
+    image: server:latest
+    ports:
+      - 8080:8080

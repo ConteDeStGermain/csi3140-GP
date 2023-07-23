@@ -12,11 +12,13 @@ app.use(express.json());
 
 // Function to run sentiment.py script
 function getSentiment(input) {
-  const python = spawnSync('python', ['../python_scripts/sentiment.py', input]);
-  const output = python.stdout.toString();
-  const error = python.stderr.toString();
-  if (error) {
-    console.error('Python script error:', error);
+  const python = spawnSync('python', 
+    ['./scripts/sentiment.py', input], 
+    { encoding: 'utf-8' });
+  const output = python.stdout;
+  const error = python.stderr;
+  if (error != null && error.includes("Error")) {
+    console.log(error)
     return null;
   }
   return output;
@@ -43,7 +45,9 @@ app.post('/saveMessage', (req, res) => {
     let messages = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
     // Run sentiment.py script on the message
-    let senti = getSentiment(message).trim().split(" ");
+    let senti = getSentiment(message)
+    console.log("senti: " + senti)
+    senti = senti.trim().split(" ");
     let attitude = senti[0];
     let attitudeScore = senti[1];
 
@@ -63,10 +67,10 @@ app.post('/saveMessage', (req, res) => {
 app.get('/getTopics', (req, res) => {
   const numberOfTopics = req.query.number;
 
-  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
+  const python = spawnSync('python3', ['./scripts/topic.py', './messages.json', numberOfTopics]);
 
   // Check for errors in the Python script
-  if(python.stderr.toString()){
+  if(python.stderr.toString() && python.stderr.toString().includes("Error")){
     console.log("Python script error: ", python.stderr.toString());
     res.status(500).send({error: "An error occurred while executing the Python script"});
     return;
@@ -114,9 +118,11 @@ app.get('/getNumberOfMessages', (req, res) => {
 app.get('/getMessagesWithTopicModelling', (req, res) => {
   const numberOfTopics = req.query.number;
   
-  const python = spawnSync('python', ['../python_scripts/topic.py', './messages.json', numberOfTopics]);
-  const error = python.stderr.toString();
-  if (error) {
+  const python = spawnSync('python', ['./scripts/topic.py', './messages.json', numberOfTopics], 
+    { encoding: 'utf-8' });
+  const output = python.stdout;
+  const error = python.stderr;
+  if (error != null && error.includes("Error")) {
     res.status(500).json({ error: 'An error occurred while running the python script.' });
     return;
   }
