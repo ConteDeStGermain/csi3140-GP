@@ -46,6 +46,8 @@ For the [client image](https://hub.docker.com/repository/docker/svetlana154/crsa
 docker pull svetlana154/crsa-web-app-client:latest
 ```
 
+Run them using a similar docker-compose.yaml to the one defined in the source code.
+
 # Manual Testing
 
 In order to test the server endpoints, pull the github source code and navigate to the backend directory through `cd ./backend`. Then run the following command to run all the JavaScript tests for the backend:
