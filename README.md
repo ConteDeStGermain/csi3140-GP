@@ -26,7 +26,7 @@ Now, your backend server should be up and running.
 To install the necessary Python packages, you'll need Python and pip installed on your system. If you don't have them installed, you can download and install them from [here](https://www.python.org/downloads/).
 
 1. Open a terminal (if you closed the previous one).
-2. Navigate to the `python_scripts` directory with the command: `cd python_scripts`
+2. Navigate to the `scripts` directory with the command: `cd scripts`
 3. Install the necessary Python packages with: `pip install -r requirements.txt`
 
 Now, you should have all the necessary Python packages installed.
